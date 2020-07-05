@@ -1,0 +1,22 @@
+{
+  "name": "@esc_games/safari-accelerometer-takeover",
+  "version": "1.1.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@gitlab.com/escgametheater/safari-accelerometer-takeover.git"
+  },
+  "author": "ESC Games",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://gitlab.com/escgametheater/safari-accelerometer-takeover/issues"
+  },
+  "homepage": "https://gitlab.com/escgametheater/safari-accelerometer-takeover#readme",
+  "devDependencies": {
+    "react": "^16.8.6"
+  }
+}

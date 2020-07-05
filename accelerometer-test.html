@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Accelerometer Javascript Test</title>
+    <style>
+        .acc {
+            text-align: right;
+            width: 25vw;
+        }
+    </style>
+</head>
+
+<body style="font-size: 2em">
+<div id="content">
+    <h1>Accelerometer Javascript Test</h1>
+    <table style="font-size: 8vw">
+        <tr><th>Axis</th><th>accel.</th><th>min</th><th>max</th></tr>
+        <tr><th style="text-align: left">x &LeftRightArrow;</th> <td id="accX" class="acc"></td><td id="minX" class="acc"></td> <td id="maxX" class="acc"></td></tr>
+        <tr><th style="text-align: left">y &updownarrow;</th> <td id="accY" style="text-align: right"></td><td id="minY" class="acc"></td> <td id="maxY" class="acc"></td></tr>
+        <tr><th style="text-align: left">z &#10530;</th> <td id="accZ" class="acc"></td><td id="minZ" class="acc"></td> <td id="maxZ" class="acc"></td></tr>
+    </table>
+    <p></p>
+    orientationchange (will work on iPhones even if accelerometer is disabled but it will only show screen orientation in 90 degree incrememnts
+     and it is slow)
+    <ul>
+        <li>count: <span id="orientationChangeCount"></span></li>
+    </ul>
+
+    debug: <span id="debug"></span>
+</div>
+<script type="text/javascript">
+
+    import('./deviceMotionChecker.js').then(module=>module.deviceMotionChecker(deviceMotionStatusHandler));
+
+    let max = {
+        x:-100,y:-100,z:-100
+    };
+
+    let min = {
+        x:100,y:100,z:100
+    };
+
+    let lastAcc = false ;
+
+    let orientationChangeCount = 0;
+
+    function orientationChangeHandler(e) {
+        orientationChangeCount++;
+        document.getElementById("orientationChangeCount").innerHTML = "" + orientationChangeCount ;
+    }
+
+    function debugMessage(msg) {
+        document.getElementById("debug").innerHTML = msg ;
+        console.log(msg);
+    }
+
+    function deviceMotionStatusHandler(status) {
+        console.log("deviceMotionChecker status ",status);
+        if (status.timedOut) {
+            if (!status.secure) {
+                debugMessage("Web page needs to be served by https to enable accelerometer.<br>" +
+                    "<a href='https" + window.location.href.slice(4)+ "'>Try to open with https.</a>\n"
+                );
+            } else if (status.iOS12_2) {
+                debugMessage("You have iOS 12.2. Please enable Motion & Orientation Access in " +
+                    "Settings > Safari > PRIVACY & SECURITY section, then reload. BLAME APPLE. <br>"+
+                    "<a href='googlechrome" + window.location.href.slice(4)+ "'>Open in Chrome instead</a>\n");
+            } else {
+                debugMessage("Either there is no accelerometer on your device or it's disabled.");
+            }
+        } else if (status.working) {
+            debugMessage("deviceMotion is working :)");
+        }
+        else {
+            debugMessage("Checking if accelerometer is available. "+
+            "<a href='googlechrome" + window.location.href.slice(4)+ "'>Open in Chrome instead</a>\n"
+            );
+        }
+    }
+
+
+    function deviceMotionHandler(e) {
+        let acc =  e.accelerationIncludingGravity ;
+
+        document.getElementById("accX").innerHTML = acc.x.toFixed(2);
+        document.getElementById("accY").innerHTML = acc.y.toFixed(2);
+        document.getElementById("accZ").innerHTML = acc.z.toFixed(2);
+
+        max.x = Math.max(acc.x,max.x);
+        max.y = Math.max(acc.y,max.y);
+        max.z = Math.max(acc.z,max.z);
+        min.x = Math.min(acc.x,min.x);
+        min.y = Math.min(acc.y,min.y);
+        min.z = Math.min(acc.z,min.z);
+
+        document.getElementById("minX").innerHTML = min.x.toFixed(2);
+        document.getElementById("minY").innerHTML = min.y.toFixed(2);
+        document.getElementById("minZ").innerHTML = min.z.toFixed(2);
+        document.getElementById("maxX").innerHTML = max.x.toFixed(2);
+        document.getElementById("maxY").innerHTML = max.y.toFixed(2);
+        document.getElementById("maxZ").innerHTML = max.z.toFixed(2);
+
+        lastAcc = acc ;
+    }
+
+    window.addEventListener("orientationchange", orientationChangeHandler, true);
+
+    if (window.DeviceMotionEvent !== undefined) {
+        window.addEventListener("devicemotion", deviceMotionHandler, true);
+    }
+    else {
+        debugMessage("DeviceMotionEvent is undefined!");
+    }
+
+
+</script>
+
+</body>
+</html>
